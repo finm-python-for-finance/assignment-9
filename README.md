@@ -185,16 +185,4 @@ mini-trading-system/
 └── README.md
 ```
 
----
-
-# 🚀 Optional Extensions
-
-If you'd like to enhance the system further, here are some ideas:
-
-- Add partial fills  
-- Expand FIX schema validation  
-- Add an order book simulator  
-- Persistence with SQLite instead of JSON  
-- Build a replay engine that consumes `events.json`  
-- Add metrics like fill rate, rejected rate, PnL tracking  
 
