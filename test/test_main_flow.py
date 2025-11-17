@@ -10,6 +10,7 @@ from logger import Logger
 
 @pytest.fixture
 def temp_logger():
+
     """Create a temporary logger instance isolated from the real events.json."""
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         path = tmp.name
@@ -26,6 +27,9 @@ def temp_logger():
 
 def test_process_message_success(monkeypatch, temp_logger):
     logger, path = temp_logger
+
+    risk.positions = {}   # reset risk engine
+    logger.events = []    # reset logger
 
     # monkeypatch global logger in main.py
     monkeypatch.setattr("main.log", logger)
@@ -50,7 +54,11 @@ def test_process_message_success(monkeypatch, temp_logger):
 
 
 def test_process_message_rejected(monkeypatch, temp_logger):
+    
     logger, path = temp_logger
+
+    risk.positions = {}   # reset risk engine
+    logger.events = []    # reset logger
 
     # monkeypatch global logger
     monkeypatch.setattr("main.log", logger)
@@ -74,6 +82,9 @@ def test_process_message_rejected(monkeypatch, temp_logger):
 def test_logger_save_writes_json(monkeypatch, temp_logger):
     logger, path = temp_logger
 
+    risk.positions = {}   # reset risk engine
+    logger.events = []    # reset logger
+
     monkeypatch.setattr("main.log", logger)
 
     # produce two events
@@ -88,6 +99,9 @@ def test_logger_save_writes_json(monkeypatch, temp_logger):
         data = json.load(f)
 
     assert isinstance(data, list)
-    assert len(data) == 2
+    assert len(data) == 4         
+
     assert data[0]["type"] == "OrderCreated"
-    assert data[1]["type"] in ("OrderFilled", "OrderRejected")
+    assert data[1]["type"] == "OrderFilled"
+    assert data[2]["type"] == "OrderCreated"
+    assert data[3]["type"] == "OrderFilled"
